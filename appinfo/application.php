@@ -12,11 +12,9 @@
 namespace OCA\Maps\AppInfo;
 
 
-use OC\AppFramework\Utility\SimpleContainer;
+use OCA\Maps\DB\FavoriteShareMapper;
 use OCA\Maps\Controller\PublicFavoritesApiController;
-use OCA\Maps\Service\AddressService;
 use \OCP\AppFramework\App;
-use OCA\Maps\Controller\PageController;
 use OCA\Maps\Controller\UtilsController;
 use OCA\Maps\Controller\FavoritesController;
 use OCA\Maps\Controller\FavoritesApiController;
@@ -72,7 +70,11 @@ class Application extends App
                     $c->query('ServerContainer')->getL10N($c->query('AppName')),
                     $c->query('ServerContainer')->getSecureRandom()
                 ),
-                $c->query('ServerContainer')->getDateTimeZone()
+                $c->query('ServerContainer')->getDateTimeZone(),
+              new FavoriteShareMapper(
+                $c->query('DatabaseConnection'),
+                $c->query('ServerContainer')->getSecureRandom()
+              ),
             );
         });
 
@@ -103,14 +105,16 @@ class Application extends App
             return new PublicFavoritesApiController(
                 $c->query('AppName'),
                 $c->query('Request'),
-                $c->query('UserId'),
                 $c->query('Session'),
-                $c->query('ServerContainer')->getConfig(),
                 new FavoritesService(
                     $c->query('ServerContainer')->getLogger(),
                     $c->query('ServerContainer')->getL10N($c->query('AppName')),
                     $c->query('ServerContainer')->getSecureRandom()
-                )
+                ),
+              new FavoriteShareMapper(
+                $c->query('DatabaseConnection'),
+                $c->query('ServerContainer')->getSecureRandom()
+              ),
             );
         });
 
@@ -122,11 +126,10 @@ class Application extends App
                 $c->query('Session'),
                 $c->query('ServerContainer')->getConfig(),
                 $c->query('Logger'),
-                new FavoritesService(
-                    $c->query('ServerContainer')->getLogger(),
-                    $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                    $c->query('ServerContainer')->getSecureRandom()
-                )
+              new FavoriteShareMapper(
+                $c->query('DatabaseConnection'),
+                $c->query('ServerContainer')->getSecureRandom()
+              ),
             );
         });
 
