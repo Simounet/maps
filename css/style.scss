@@ -17,6 +17,11 @@
     padding-right: 80px;
     text-overflow: ellipsis;
 }
+#router-select {
+    width: calc(100% - 60px);
+    text-overflow: ellipsis;
+    margin-top: 0;
+}
 @media only screen and (max-width: $breakpoint-mobile) {
     // Account for navigation menu toggle on the top left
     #search-term,
@@ -54,6 +59,14 @@
     float: right;
     border: none;
     margin: 0px 10px 0px 0px !important;
+}
+
+.no-routing-engine-warning {
+    padding: 10px 10px 0 10px;
+    a {
+        height: initial !important;
+        width: initial !important;
+    }
 }
 
 #timeRangeSlider {
@@ -110,6 +123,7 @@
 }
 .leaflet-container {
     background: var(--color-main-background);
+    font-family: var(--font-face);
 }
 
 .leaflet-control-layers-base {
@@ -266,6 +280,7 @@ tr.selected td {
 }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background-color: var(--color-main-background) !important;
+    box-shadow: none;
 }
 .leaflet-bar {
     background-color: var(--color-main-background);
@@ -402,6 +417,10 @@ tr.selected td {
     width: 300px;
 }
 
+.leaflet-marker-contact-tooltip p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
 .leaflet-marker-favorite-tooltip,
 .leaflet-marker-device-tooltip,
 .leaflet-marker-track-tooltip,
@@ -546,6 +565,23 @@ tr.selected td {
     /* waiting for a better solution */
     overflow: hidden;
 }
+.exportCurrentRoute {
+    margin-top: 5px !important;
+    margin-bottom: 2px !important;
+    float: right !important;
+    padding: 0 !important;
+    line-height: initial !important;
+    min-height: 2px !important;
+    height: 25px !important;
+    width: 25px !important;
+}
+.exportCurrentRoute span{
+    line-height: initial;
+}
+.exportCurrentRoute span::after{
+    font-weight: normal;
+    content: '\1F4BE';
+}
 #router-select {
     float: left;
 }
@@ -590,35 +626,51 @@ tr.selected td {
     font-weight: bold;
 }
 
-.tooltip-contact-avatar {
-    width: 70px;
-    margin-left: 40px;
-    margin-right: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--color-text-lighter);
+.contactPopup,
+.leaflet-marker-contact-tooltip {
+    width: 250px;
 }
-
+.contactPopup .leaflet-popup-content,
+.leaflet-marker-contact-tooltip {
+    display: flex;
+}
+.contactPopup p {
+    margin: 0;
+}
 .contactPopup a {
-    width: 100%;
-    text-align: center;
-    display: block;
+    color: var(--color-primary-element);
 }
-.contactPopup {
-    width: 165px;
+.tooltip-contact-avatar {
+    min-width: 70px;
+    min-height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
 }
-
-.tooltip-contact-address-type {
-    width: 100%;
-    text-align: center;
+.tooltip-contact-content {
+    padding-left: 12px;
 }
+.tooltip-contact-name,
+.tooltip-contact-address-type,
 .tooltip-contact-address {
-    width: 150px;
-    text-align: center;
+    margin: 0;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .tooltip-contact-name {
-    width: 100%;
-    text-align: center;
+    font-weight: bold;
 }
+.tooltip-contact-address-type {
+    color: var(--color-text-maxcontrast);
+}
+.contactPopup .deleteContactAddress {
+    display: inline-block;
+    cursor: pointer;
+}
+
 .no-routing-engine-warning {
     width: 100%;
     text-align: center;

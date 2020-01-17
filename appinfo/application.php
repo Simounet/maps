@@ -28,12 +28,11 @@ use OCA\Maps\Service\PhotofilesService;
 use OCA\Maps\Service\FavoritesService;
 use OCA\Maps\Service\DevicesService;
 use OCA\Maps\Service\TracksService;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
-class Application extends App
-{
-    public function __construct(array $urlParams = array())
-    {
+class Application extends App {
+    public function __construct (array $urlParams=array()) {
         parent::__construct('maps', $urlParams);
 
         $container = $this->getContainer();
@@ -53,182 +52,201 @@ class Application extends App
 
         $container->registerService(
             'FavoritesController', function ($c) {
-            return new FavoritesController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                new FavoritesService(
-                    $c->query('ServerContainer')->getLogger(),
+                return new FavoritesController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
                     $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                    $c->query('ServerContainer')->getSecureRandom()
-                ),
-                $c->query('ServerContainer')->getDateTimeZone(),
-              new FavoriteShareMapper(
-                $c->query('DatabaseConnection'),
-                $c->query('ServerContainer')->getSecureRandom()
-              ),
-            );
-        });
+                    $c->query('ServerContainer')->getLogger(),
+                    new FavoritesService(
+                        $c->query('ServerContainer')->getLogger(),
+                        $c->query('ServerContainer')->getL10N($c->query('AppName')),
+                        $c->query('ServerContainer')->getSecureRandom()
+                    ),
+                    $c->query('ServerContainer')->getDateTimeZone(),
+                    new FavoriteShareMapper(
+                        $c->query('DatabaseConnection'),
+                        $c->query('ServerContainer')->getSecureRandom()
+                    ),
+                );
+            }
+        );
 
         $container->registerService(
             'FavoritesApiController', function ($c) {
-            return new FavoritesApiController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                new FavoritesService(
-                    $c->query('ServerContainer')->getLogger(),
+                return new FavoritesApiController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
                     $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                    $c->query('ServerContainer')->getSecureRandom()
-                )
-            );
-        });
-
-        $container->registerService(
-            'PublicFavoritesAPIController', function ($c) {
-            return new PublicFavoritesApiController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('Session'),
-                new FavoritesService(
                     $c->query('ServerContainer')->getLogger(),
-                    $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                    $c->query('ServerContainer')->getSecureRandom()
-                ),
-              new FavoriteShareMapper(
-                $c->query('DatabaseConnection'),
-                $c->query('ServerContainer')->getSecureRandom()
-              ),
-            );
-        });
+                    new FavoritesService(
+                        $c->query('ServerContainer')->getLogger(),
+                        $c->query('ServerContainer')->getL10N($c->query('AppName')),
+                        $c->query('ServerContainer')->getSecureRandom()
+                    )
+                );
+            }
+        );
 
-        $container->registerService(
-            'PublicPageController', function ($c) {
-            return new PublicPageController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('Session'),
-                $c->query('ServerContainer')->getConfig(),
-                $c->query('Logger'),
-              new FavoriteShareMapper(
-                $c->query('DatabaseConnection'),
-                $c->query('ServerContainer')->getSecureRandom()
-              ),
-            );
-        });
+      $container->registerService(
+          'PublicFavoritesAPIController', function ($c) {
+              return new PublicFavoritesApiController(
+                  $c->query('AppName'),
+                  $c->query('Request'),
+                  $c->query('Session'),
+                  new FavoritesService(
+                      $c->query('ServerContainer')->getLogger(),
+                      $c->query('ServerContainer')->getL10N($c->query('AppName')),
+                      $c->query('ServerContainer')->getSecureRandom()
+                  ),
+                  new FavoriteShareMapper(
+                      $c->query('DatabaseConnection'),
+                      $c->query('ServerContainer')->getSecureRandom()
+                  ),
+              );
+      });
+
+      $container->registerService(
+          'PublicPageController', function ($c) {
+              return new PublicPageController(
+                  $c->query('AppName'),
+                  $c->query('Request'),
+                  $c->query('Session'),
+                  $c->query('ServerContainer')->getConfig(),
+                  $c->query('Logger'),
+                  new FavoriteShareMapper(
+                      $c->query('DatabaseConnection'),
+                      $c->query('ServerContainer')->getSecureRandom()
+                  ),
+              );
+      });
 
         $container->registerService(
             'DevicesController', function ($c) {
-            return new DevicesController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                new DevicesService(
+                return new DevicesController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
+                    $c->query('ServerContainer')->getL10N($c->query('AppName')),
                     $c->query('ServerContainer')->getLogger(),
-                    $c->query('ServerContainer')->getL10N($c->query('AppName'))
-                ),
-                $c->query('ServerContainer')->getDateTimeZone()
-            );
-        });
+                    new DevicesService(
+                        $c->query('ServerContainer')->getLogger(),
+                        $c->query('ServerContainer')->getL10N($c->query('AppName'))
+                    ),
+                    $c->query('ServerContainer')->getDateTimeZone()
+                );
+            }
+        );
 
         $container->registerService(
             'DevicesApiController', function ($c) {
-            return new DevicesApiController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                new DevicesService(
+                return new DevicesApiController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
+                    $c->query('ServerContainer')->getL10N($c->query('AppName')),
                     $c->query('ServerContainer')->getLogger(),
-                    $c->query('ServerContainer')->getL10N($c->query('AppName'))
-                )
-            );
-        });
+                    new DevicesService(
+                        $c->query('ServerContainer')->getLogger(),
+                        $c->query('ServerContainer')->getL10N($c->query('AppName'))
+                    )
+                );
+            }
+        );
 
         $container->registerService(
             'RoutingController', function ($c) {
-            return new RoutingController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                $c->query('ServerContainer')->getDateTimeZone()
-            );
-        });
+                return new RoutingController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
+                    $c->query('ServerContainer')->getL10N($c->query('AppName')),
+                    $c->query('ServerContainer')->getLogger(),
+                    $c->query('ServerContainer')->getDateTimeZone()
+                );
+            }
+        );
 
         $container->registerService(
             'TracksController', function ($c) {
-            return new TracksController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getShareManager(),
-                $c->getServer()->getAppManager(),
-                $c->getServer()->getUserManager(),
-                $c->getServer()->getGroupManager(),
-                $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                $c->query('ServerContainer')->getLogger(),
-                new TracksService(
-                    $c->query('ServerContainer')->getLogger(),
+                return new TracksController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getShareManager(),
+                    $c->getServer()->getAppManager(),
+                    $c->getServer()->getUserManager(),
+                    $c->getServer()->getGroupManager(),
                     $c->query('ServerContainer')->getL10N($c->query('AppName')),
-                    $c->query('ServerContainer')->getRootFolder(),
-                    $c->getServer()->getShareManager()
-                )
-            );
-        });
+                    $c->query('ServerContainer')->getLogger(),
+                    new TracksService(
+                        $c->query('ServerContainer')->getLogger(),
+                        $c->query('ServerContainer')->getL10N($c->query('AppName')),
+                        $c->query('ServerContainer')->getRootFolder(),
+                        $c->getServer()->getShareManager()
+                    )
+                );
+            }
+        );
 
         $container->registerService(
             'UtilsController', function ($c) {
-            return new UtilsController(
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId'),
-                $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
-                $c->query('ServerContainer')->getConfig(),
-                $c->getServer()->getAppManager()
-            );
-        });
+                return new UtilsController(
+                    $c->query('AppName'),
+                    $c->query('Request'),
+                    $c->query('UserId'),
+                    $c->query('ServerContainer')->getUserFolder($c->query('UserId')),
+                    $c->query('ServerContainer')->getConfig(),
+                    $c->getServer()->getAppManager()
+                );
+            }
+        );
+
+        $this->registerFeaturePolicy();
     }
 
+	private function registerFeaturePolicy() {
+		/** @var EventDispatcherInterface $dispatcher */
+		$dispatcher = $this->getContainer()->getServer()->getEventDispatcher();
+
+		$dispatcher->addListener('OCP\Security\FeaturePolicy\AddFeaturePolicyEvent', function (\OCP\Security\FeaturePolicy\AddFeaturePolicyEvent $e) {
+			$fp = new \OCP\AppFramework\Http\EmptyFeaturePolicy();
+			$fp->addAllowedGeoLocationDomain('\'self\'');
+			$e->addPolicy($fp);
+		});
+	}
 
 }

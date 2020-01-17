@@ -17,15 +17,21 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Http\Template\PublicTemplateResponse;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
+use OCP\IInitialStateService;
 
 class PageController extends Controller {
     private $userId;
     private $config;
 
-    public function __construct($AppName, IRequest $request, $UserId, IConfig $config){
+    public function __construct($AppName,
+                                IRequest $request,
+                                $UserId,
+                                IConfig $config,
+                                IInitialStateService $initialStateService){
         parent::__construct($AppName, $request);
         $this->userId = $UserId;
         $this->config = $config;
+        $this->initialStateService = $initialStateService;
     }
 
     /**
@@ -40,6 +46,7 @@ class PageController extends Controller {
      */
     public function index() {
         $params = array('user' => $this->userId);
+        $this->initialStateService->provideInitialState($this->appName, 'photos', $this->config->getAppValue('photos', 'enabled', 'no') === 'yes');
         $response = new TemplateResponse('maps', 'index', $params);
 
         $this->addCsp($response);
@@ -93,6 +100,7 @@ class PageController extends Controller {
             // default routing engine
             $csp->addAllowedConnectDomain('https://*.project-osrm.org');
             $csp->addAllowedConnectDomain('https://api.mapbox.com');
+            $csp->addAllowedConnectDomain('https://events.mapbox.com');
             $csp->addAllowedConnectDomain('https://graphhopper.com');
             // allow connections to custom routing engines
             $urlKeys = [

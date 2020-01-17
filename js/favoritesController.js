@@ -949,6 +949,7 @@ FavoritesController.prototype = {
             source: catList
         });
         $('input[role="name"]').focus().select();
+        this.map.clickpopup = true;
     },
 
     getFavoritePopupContent: function(fav) {
@@ -1004,12 +1005,15 @@ FavoritesController.prototype = {
 
         e.target.unbindPopup();
         var popupContent = this._map.favoritesController.getFavoriteContextPopupContent(fav);
-        e.target.bindPopup(popupContent, {
+
+        var popup = L.popup({
             closeOnClick: true,
             className: 'popovermenu open popupMarker',
             offset: L.point(-5, 9)
-        });
-        e.target.openPopup();
+        })
+            .setLatLng([fav.lat, fav.lng])
+            .setContent(popupContent)
+            .openOn(this._map);
     },
 
     getFavoriteContextPopupContent: function(fav) {
